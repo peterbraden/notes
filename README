@@ -11,7 +11,11 @@ Couchdb - documents
 			- nested id syntax: *(id)
 			- editor will autocomplete and
               load in document
- 
+ 			- Json symbols are keyboard shortcuts to editor 
+	- Instead of type use class/tags to determine 
+	- Document children are open or closed - determines which todo items to show etc.
+
+
 
 Search by id -> id slugified title
 compile to json
@@ -29,11 +33,17 @@ Sync Kindle
 
 
 
-Steps
+== Steps:
+
 / - node.js command line todo
 	X update node
     X install npm
-    - couchdb library
+    D couchdb library (use request)
+	X Commandline args
+	X Config load
+	- Publish node-script-tools
+	- load DB 
+
     - add
     - ls
     - do
@@ -44,4 +54,6 @@ Steps
     - pre
 
  - Delicious syncing 
+ - html editor page
+
 
