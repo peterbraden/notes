@@ -6,11 +6,11 @@ Notes is a bunch of tools to organise life.
 Notes Notes:
 
 Couchdb - documents
-     -  documents are nested info
-          - nesting can reference other docs
-               - nested id syntax: *(id)
-               - editor will autocomplete and
-                 load in document
+	-  documents are nested info
+		- nesting can reference other docs
+			- nested id syntax: *(id)
+			- editor will autocomplete and
+              load in document
  
 
 Search by id -> id slugified title
@@ -31,18 +31,17 @@ Sync Kindle
 
 Steps
 / - node.js command line todo
-     X update node
-     X install npm
-     - couchdb library
-     - add
-     - ls
-     - do
-     - rm
-     - importance
-     - tag
-     - curr
-     - pre
-available
+	X update node
+    X install npm
+    - couchdb library
+    - add
+    - ls
+    - do
+    - rm
+    - importance
+    - tag
+    - curr
+    - pre
 
  - Delicious syncing 
 
