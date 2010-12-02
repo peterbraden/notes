@@ -41,10 +41,10 @@ Sync Kindle
     D couchdb library (use request)
 	X Commandline args
 	X Config load
-	- Publish node-script-tools
-	- load DB 
+	X Publish node-script-tools
+	D load DB (no need) 
 
-    - add
+    X add
     - ls
     - do
     - rm

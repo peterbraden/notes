@@ -20,7 +20,8 @@ $> todo do 183f
 
 var  sys = require('sys')
   , request = require('request')
-  , scriptTools = require('scriptTools');
+  , scriptTools = require('scriptTools')
+  , querystring = require('querystring');
 
 var loadDB = function(opts, cb){
   var h = {accept:'application/json', 'content-type':'application/json'}
@@ -31,11 +32,51 @@ var loadDB = function(opts, cb){
 }
 
 
-var slugify = function(title){
+var jsonResp = function(cb){
+  var resp = function(err, response, body){
+      if (err){
+        console.error(err);
+        return;
+      }
+      
+      body = JSON.parse(body);
+      if(body.error){
+        console.error(body.error);
+        return;
+      }
+      
+      cb(body)
+        
+    } 
+
+  return resp;
+}
+
+var post = function(conf, url, data, cb){
+  request({
+    uri : conf.db_uri + url,
+    headers : conf.headers,
+    body : JSON.stringify(data),
+    method:'POST'
+    }, jsonResp(cb)); 
 }
 
 
 
+var slugify = function(title){
+}
+
+var getItem = function(conf, id, cb){
+  request({
+    uri : conf.db_uri + "/" + id,
+    h :conf.headers
+    }, jsonResp(cb));
+}
+
+
+var postTask = function(conf, task, cb){
+  post(conf, '', task, cb);
+}
 
 
 
@@ -43,7 +84,10 @@ var commands = {
   help : function(){
     console.log('See readme.txt');
   },
-  
+
+/*********
+Add a task
+**********/  
   add : function(){
     var args = Array.prototype.slice.call(arguments, 1)
       , todo_obj = {
@@ -53,24 +97,65 @@ var commands = {
           modified : new Date().toISOString(),
         };
     
+    postTask(this, todo_obj, function(body){
+      console.log("Added:", body.id);
+    });
+  },
+  
+/***********
+List Tasks
+************/  
+  ls : function(){
+    var colors = {
+			0 : "\033[1;31;40m",
+			1 : "\033[1;33;40m",
+			2 : "\033[1;36;40m",
+			3 : '\033[1;34;40m',
+			4 : "\033[0;0;0m" // default
+	   }
+  
+  
+  
+    var query = {};
+    
+    if (!this.opts['-a']){
+      // Finish before completed items (first key seg is complete)
+      query['endkey'] = "[true]"
+    }
+      
     request({
-      method:'POST', 
-      body : JSON.stringify(todo_obj), 
-      uri : this.db_uri, 
-      headers : this.headers}, 
-      function(err, response, body){
-        if(err)
-          console.error(err);
-        
-        body = JSON.parse(body);
+      uri : this.db_uri + "/_design/database/_view/list-todo?" + querystring.stringify(query),
+      headers : this.headers,
+      }, jsonResp(function(body){
+        for (var i in body.rows){
+          var item = body.rows[body.rows.length - i -1] //Reverse
+            , fmtd = "";
+            
+          if (item.value.completed)
+            fmtd += "X "
+          else
+            fmtd += "  "   
+            
+            
+          fmtd += item.value._id + ": " + item.value.title;  
+          //console.log(item);
           
-        if (body.ok){
-          console.log("Added:", body.id);
-          return;
-        }
-        
-        console.error(body);
-      });
+          console.log(colors[item.key[1]], fmtd,  colors[4]);
+        }          
+    }));
+  },
+  
+/**************
+  Do a task
+***************/
+  'do' : function(){
+    var item_id = arguments[1]
+      , conf = this;
+    
+    getItem(conf, item_id, function(item){
+      item['completed'] = new Date().toISOString();
+      postTask(conf, item, function(){});
+    });  
   }
   
   
@@ -101,7 +186,7 @@ if (process.argv.length<3){
     
     if (commands[process.argv[2]]){
       var op = scriptTools.optParse(process.argv.slice(2));
-      conf['flags'] = op[0]
+      conf['opts'] = op[0]
       commands[process.argv[2]].apply(conf, op[1]);
     } else {
       console.log('Unknown command');
