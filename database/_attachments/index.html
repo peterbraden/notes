@@ -20,7 +20,7 @@
   
   <script type='text/javascript'>
 $(function(){
-	$.getJSON("http://localhost:5984/notes/_design/database/_view/list-todo?endkey=[true]", {}, function(data){
+	$.getJSON("./_view/list-todo?endkey=[true]", {}, function(data){
 		console.log(data);
 		out = ""
 		for (var i in data.rows){
