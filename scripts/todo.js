@@ -18,8 +18,7 @@ $> todo do 183f
 
 */
 
-var  sys = require('sys')
-  , request = require('request')
+var request = require('request')
   , scriptTools = require('scriptTools')
   , querystring = require('querystring');
 
@@ -232,7 +231,7 @@ List Tasks
 
 
 if (process.argv.length<3){
-  sys.print('usage: todo command [args]');
+  console.log('usage: todo command [args]');
   
 } else{
   scriptTools.loadConfig(".notesconfig", function(conf){
