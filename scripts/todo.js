@@ -236,20 +236,27 @@ if (process.argv.length<3){
   
 } else{
   scriptTools.loadConfig(".notesconfig", function(conf){
-    /* Setup globals */
-    if (conf.user && conf.pwd && conf.host && conf.database)
-      conf.db_uri = "http://" + conf.user + ":" + conf.pwd + "@" + conf.host + "/" + conf.database;
-    else {
-      console.err("Config needs user, pwd, host and database")
-      return;
-    }
-    
+  
     conf.headers = {accept:'application/json', 'content-type':'application/json'}
+    var op = scriptTools.optParse(process.argv.slice(2));
     
-    if (commands[process.argv[2]]){
-      var op = scriptTools.optParse(process.argv.slice(2));
+    if (commands[op[1][0]]){
+      
       conf['opts'] = op[0]
-      commands[process.argv[2]].apply(conf, op[1]);
+      
+      //DEBUG:
+      if (op[0]['--DEBUG'])
+        conf['database'] = 'notes-dev'; 
+      
+      /* Setup globals */
+      if (conf.user && conf.pwd && conf.host && conf.database)
+        conf.db_uri = "http://" + conf.user + ":" + conf.pwd + "@" + conf.host + "/" + conf.database;
+      else {
+        console.err("Config needs user, pwd, host and database")
+        return;
+      }
+    
+      commands[op[1][0]].apply(conf, op[1]);
     } else {
       console.log('Unknown command');
     } 

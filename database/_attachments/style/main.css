@@ -5,6 +5,14 @@ body {
   padding:4px;
 }
 
+.importance0 {background-color:#f00; color:#fff;}
+.importance1 {background-color:#ff0; color:#000;}
+.importance2 {background-color:#0f0; color:#fff;}
+.importance3 {background-color:#00f; color:#fff;}
+
+
+
+
 h1 {
   margin-top:0;
 }

@@ -49,7 +49,7 @@ Sync Kindle
     X do
     X rm
     X importance
-	- fuzzy id matching
+	X fuzzy id matching
 	- ls flags
     - tag
     - curr
