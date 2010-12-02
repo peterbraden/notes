@@ -63,14 +63,52 @@ var post = function(conf, url, data, cb){
 
 
 
-var slugify = function(title){
-}
 
 var getItem = function(conf, id, cb){
+  // ==Fuzzy match:
+  // 1. Look for id sub in uncomplete tasks
+  // 2. Look for segment of task title
+  request({
+      uri : conf.db_uri + "/_design/database/_view/list-todo?endkey=[true]",
+      headers : conf.headers,
+      }, jsonResp(function(body){
+        var out = [];
+        var textMatch = [];
+        
+        for (var i in body.rows){
+          if (body.rows[i].id.indexOf(id)>-1){
+            out.push(body.rows[i].value);
+          }
+          if (body.rows[i].value.title.indexOf(id)>-1){
+            textMatch.push(body.rows[i].value);
+          }
+        }
+        if (out.length){
+          if (out.length == 1)
+            cb(out[0]);
+          else
+            console.error("Couldn't find task - nonunique id", out);   
+        } else {
+          if (textMatch){
+            if (textMatch.length == 1)
+              cb(textMatch[0]);
+            else
+              console.error("Couldn't find task - nonunique title");
+          } else {
+            console.error("Couldn't find task - nothing matched"); 
+          }
+        }
+    })
+  );
+
+
+  /*
+  // Exact approach - requires typing entire id
   request({
     uri : conf.db_uri + "/" + id,
     h :conf.headers
     }, jsonResp(cb));
+  */
 }
 
 
@@ -137,9 +175,7 @@ List Tasks
             fmtd += "  "   
             
             
-          fmtd += item.value._id + ": " + item.value.title;  
-          //console.log(item);
-          
+          fmtd += item.value._id.slice(-4) + ": " + item.value.title; // TODO - smarter slugify           
           console.log(colors[item.key[1]], fmtd,  colors[4]);
         }          
     }));
@@ -149,7 +185,7 @@ List Tasks
   Do a task
 ***************/
   'do' : function(){
-    var item_id = arguments[1]
+    var item_id = Array.prototype.slice.call(arguments, 1).join(" ")
       , conf = this;
     
     getItem(conf, item_id, function(item){
