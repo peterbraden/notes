@@ -150,9 +150,9 @@ List Tasks
 			3 : '\033[1;34;40m',
 			4 : "\033[0;0;0m" // default
 	   }
+	   , _this = this;
   
-  
-  
+    
     var query = {};
     
     if (!this.opts['-a']){
@@ -164,7 +164,9 @@ List Tasks
       uri : this.db_uri + "/_design/database/_view/list-todo?" + querystring.stringify(query),
       headers : this.headers,
       }, jsonResp(function(body){
-        for (var i in body.rows){
+      
+        var limind = _this.opts['--limit']?(body.rows.length - parseInt(_this.opts['--limit'])):0;        
+        for (var i = limind; i< body.rows.length; i++){
           var item = body.rows[body.rows.length - i -1] //Reverse
             , fmtd = "";
             
@@ -240,10 +242,15 @@ List Tasks
       
       postTask(conf, item, function(){});
     });  
-  }
+  },
   
-
-
+/**********
+ Current task
+ **********/
+  curr : function(){
+    this.opts['--limit'] = 1;
+    commands.ls.apply(this, arguments)
+  }
 };
 
 
