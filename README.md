@@ -1,22 +1,30 @@
-## Notes
+# Notes
 
 Notes is a bunch of tools to organise life.
 
-# Command line todo tool
-
+### Command line todo tool
+	
+	$> todo add Buy bacon
+	Added: e53c0e66d62b946d2899a45a2c00183f
+	
 	$> todo add Take over world
-	id 2fa4
+	Added: e53c0e66d62b946d2899a45a2c002fa4
 
-	$> todo ls
- 	183f. Buy bacon
- 	2fa4. Take over world
+	$> todo importance bacon 0
+	Added: e53c0e66d62b946d2899a45a2c002fa4
+
+	$> todo ls 
+ 	  2fa4 - Take over world
+ 	  183f - Buy bacon
  
 	$> todo do 183f
+	
+	$> todo ls
+	  2fa4 - Take over world
 
-
-
-
-
+	$> todo rm world
+	
+	$>
 
 
 
@@ -77,8 +85,7 @@ Sync Kindle
     X rm
     X importance
 	X fuzzy id matching
-	- ls flags
-    - tag
+    X tag
     - curr
     - pre
 

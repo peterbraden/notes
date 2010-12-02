@@ -175,6 +175,10 @@ List Tasks
             
             
           fmtd += item.value._id.slice(-4) + ": " + item.value.title; // TODO - smarter slugify           
+          
+          if (item.value.tags && item.value.tags.length){
+            fmtd += " #" + item.value.tags.join(", #");
+          }
           console.log(colors[item.key[1]], fmtd,  colors[4]);
         }          
     }));
@@ -220,8 +224,25 @@ List Tasks
       item['deleted'] = new Date().toISOString();
       postTask(conf, item, function(){});
     });  
+  },
+  
+/**************
+  tag a task
+***************/
+  tag : function(){
+    var item_id = arguments[1]
+      , tags = Array.prototype.slice.call(arguments, 2)
+      , conf = this;
+    
+    getItem(conf, item_id, function(item){
+      item['tags'] = item['tags'] || [];
+      item['tags'] = item['tags'].concat(tags)
+      
+      postTask(conf, item, function(){});
+    });  
   }
   
+
 
 };
 
