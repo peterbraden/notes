@@ -45,13 +45,15 @@ Sync Kindle
 	D load DB (no need) 
 
     X add
-    - ls
-    - do
-    - rm
-    - importance
+    X ls
+    X do
+    X rm
+    X importance
     - tag
     - curr
     - pre
+	- ls flags
+	- fuzzy id matching
 
  - Delicious syncing 
  - html editor page

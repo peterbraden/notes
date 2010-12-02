@@ -156,11 +156,37 @@ List Tasks
       item['completed'] = new Date().toISOString();
       postTask(conf, item, function(){});
     });  
+  },
+
+/**************
+  Adjust a task's priority
+***************/
+  'importance' : function(){
+    var item_id = arguments[1]
+      , importance = parseInt(arguments[2])
+      , conf = this;
+    
+    getItem(conf, item_id, function(item){
+      item['importance'] = importance;
+      postTask(conf, item, function(){});
+    });  
+  },
+
+  
+  
+/**************
+  Delete a task
+***************/
+  rm : function(){
+    var item_id = arguments[1]
+      , conf = this;
+    
+    getItem(conf, item_id, function(item){
+      item['deleted'] = new Date().toISOString();
+      postTask(conf, item, function(){});
+    });  
   }
   
-  
-
-
 
 };
 
