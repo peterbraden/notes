@@ -19,21 +19,73 @@
   <script>!window.jQuery && document.write(unescape('%3Cscript src="js/libs/jquery-1.4.4.js"%3E%3C/script%3E'))</script>
   
   <script type='text/javascript'>
+
+
+
+var editDoc = function(doc){
+	var children = $("<ul />");
+	
+	for (var k in doc){
+		var v = doc[k];
+		children.append("<li>" + k + " : " + v + "</li>");
+	}
+	
+	
+	
+	var lb = $("<div />")
+		.append("<h1>" + doc.title + "</h1>")
+		.click(function(e){
+			e.stopPropagation();
+		})
+		.append(children);		
+
+	$('body').append($("<div class='lightbox'/>")
+		.append(lb));
+	$('body').append("<div class='greyout' />");
+	$('.lightbox, .greyout').click(function(){
+		$('.lightbox, .greyout').remove();
+		lb.remove();
+	});
+}
+
+
+
 $(function(){
+	$(".task").live('click', function(){
+		console.log($("#tasks").data(this.id));
+		editDoc($("#tasks").data(this.id));
+	});
+	
+	
+	
+	
+	/** Load initial tasks **/
 	$.getJSON("./_view/list-todo?endkey=[true]", {}, function(data){
 		console.log(data);
 		out = ""
 		for (var i in data.rows){
 			var todo = data.rows[i];
-			out += "<li class='task importance" + todo.key[1] + "'>" + todo.value.title + "</li>";
+			$("#tasks").data(todo.id, todo.value);
+			out += "<li id = '" + todo.id + "' class='task importance" + todo.key[1] + "'>" + todo.value.title + "</li>";
 		}	
 		
 		$("#tasks-container").html("<ul>" + out + "</ul>");
 		
 	});
 
+
+
+
+
+
 	
-});  
+}); 
+
+
+
+
+
+ 
   
   
   </script>

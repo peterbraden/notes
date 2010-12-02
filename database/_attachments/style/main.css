@@ -93,3 +93,36 @@ div.avatar img {
 #items ul {
   list-style: none;
 }
+
+
+.lightbox{
+	position:fixed;
+	z-index:1000;
+	top:2em;
+	width:100%;
+	height:100%;
+}
+.lightbox div{
+	padding:2em;
+	display:block;
+	margin:2em auto;
+	width:30em;
+	background-color:#FFF;
+	max-height:80%;
+	-webkit-border-radius: 1em;
+	-moz-border-radius: 1em;
+	border-radius: 1em;
+}
+
+.greyout{
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 90;
+        width: 100%;
+        height: 10000px;
+        background-color: #000;
+        filter:alpha(opacity=80);
+        -moz-opacity: 0.8;
+        opacity: 0.8;
+}
