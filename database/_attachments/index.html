@@ -25,7 +25,7 @@ $(function(){
 		out = ""
 		for (var i in data.rows){
 			var todo = data.rows[i];
-			out += "<li class='importance" + todo.key[1] + "'>" + todo.value.title + "</li>";
+			out += "<li class='task importance" + todo.key[1] + "'>" + todo.value.title + "</li>";
 		}	
 		
 		$("#tasks-container").html("<ul>" + out + "</ul>");

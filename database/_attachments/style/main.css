@@ -5,11 +5,23 @@ body {
   padding:4px;
 }
 
-.importance0 {background-color:#f00; color:#fff;}
-.importance1 {background-color:#ff0; color:#000;}
-.importance2 {background-color:#0f0; color:#fff;}
-.importance3 {background-color:#00f; color:#fff;}
 
+
+li.task{
+	list-style:none;
+	padding:0.5em;
+	-moz-border-radius:1em;
+	margin:0.5em;
+	text-align:center;
+	background-color:#99f;
+	color:#fff;
+}
+
+
+li.importance0 {background-color:#f00; color:#fff;}
+li.importance1 {background-color:#ff0; color:#000;}
+li.importance2 {background-color:#0f0; color:#fff;}
+li.importance3 {background-color:#00f; color:#fff;}
 
 
 
