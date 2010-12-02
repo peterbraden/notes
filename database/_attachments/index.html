@@ -1,29 +1,42 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>My New CouchApp</title>
+    <title>Notes</title>
     <link rel="stylesheet" href="style/main.css" type="text/css">
   </head>
   <body>
     <div id="account"></div>
+    <h1>Notes</h1>
+	
+		<div id='tasks'>
+			<h2>Tasks</h2>
+			<div id ='tasks-container'>Loading&hellip;</div>
+		</div>
 
-    <h1>Generated CouchApp</h1>
 
-    <div id="profile"></div>
-    <div id="items"></div>
 
-    <div id="sidebar">
-      <p>Edit welcome message.</p>
-      <p>Ideas: You could easily turn this into a photo sharing app, or a grocery list, or a chat room.</p>
-    </div>
-  </body>
-  <script src="vendor/couchapp/loader.js"></script>
-  <script type="text/javascript" charset="utf-8">
-    $.couch.app(function(app) {
-      $("#account").evently("account", app);
-      $("#profile").evently("profile", app);
-      $.evently.connect("#account","#profile", ["loggedIn","loggedOut"]);
-      $("#items").evently("items", app);
-    });
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="js/libs/jquery-1.4.4.js"%3E%3C/script%3E'))</script>
+  
+  <script type='text/javascript'>
+$(function(){
+	$.getJSON("http://localhost:5984/notes/_design/database/_view/list-todo?endkey=[true]", {}, function(data){
+		console.log(data);
+		out = ""
+		for (var i in data.rows){
+			var todo = data.rows[i];
+			out += "<li>" + todo.value.title + "</li>";
+		}	
+		
+		$("#tasks-container").html("<ul>" + out + "</ul>");
+		
+	});
+
+	
+});  
+  
+  
   </script>
+  
+	</body>
 </html>

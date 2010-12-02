@@ -49,11 +49,11 @@ Sync Kindle
     X do
     X rm
     X importance
+	- fuzzy id matching
+	- ls flags
     - tag
     - curr
     - pre
-	- ls flags
-	- fuzzy id matching
 
  - Delicious syncing 
  - html editor page
