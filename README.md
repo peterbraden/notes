@@ -86,7 +86,7 @@ Sync Kindle
     X importance
 	X fuzzy id matching
     X tag
-    - curr
+    X curr
     - pre
 
  - Delicious syncing 

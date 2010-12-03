@@ -30,6 +30,14 @@ var loadDB = function(opts, cb){
   });
 }
 
+var colors = {
+			0 : "\033[1;31;40m",
+			1 : "\033[1;33;40m",
+			2 : "\033[1;36;40m",
+			3 : '\033[1;34;40m',
+			4 : "\033[0;0;0m" // default
+	   };
+
 
 var jsonResp = function(cb){
   var resp = function(err, response, body){
@@ -117,6 +125,54 @@ var postTask = function(conf, task, cb){
 
 
 
+var formatTask = function(conf, item, cb, prefix, sub){    
+  var fmtd = ""
+    , val = item.value
+    , prefix = prefix || '';
+      
+  if (!sub && (val.class.indexOf('sub') >-1 && !(conf.opts['--sub'] || conf.opts['-a']))){
+    cb();
+    return;
+  }        
+            
+  if (val.completed)
+    fmtd += "X "
+  else
+    fmtd += "  "   
+      
+      
+  fmtd += val._id.slice(-4) + ": " + val.title; // TODO - smarter slugify           
+  
+  if (val.tags && val.tags.length){
+    fmtd += " #" + val.tags.join(", #");
+  }
+  
+  // V Densely nested :)
+  if (val.prerequisites && val.prerequisites.length){
+    if (val.open){
+      var iter = function(j, out){
+        getItem(conf, val.prerequisites[j].slice(1), function(task){
+          formatTask(conf, {value:task}, function(tsk){
+            if(j<val.prerequisites.length-1){
+              iter(j+1, out + '\n' + tsk)
+            } else {
+              cb(out + '\n' + tsk);
+            }
+          }, '  ', true);
+        });
+      }
+      iter(0, fmtd);
+      return;
+    } else {
+      fmtd += " (" + val.prerequisites.length + " sub)";
+    }  
+  }
+  cb(prefix + colors[val.importance==undefined?4:val.importance] + fmtd + colors[4]);
+}
+
+
+
+
 var commands = {  
   help : function(){
     console.log('See readme.txt');
@@ -143,14 +199,7 @@ Add a task
 List Tasks
 ************/  
   ls : function(){
-    var colors = {
-			0 : "\033[1;31;40m",
-			1 : "\033[1;33;40m",
-			2 : "\033[1;36;40m",
-			3 : '\033[1;34;40m',
-			4 : "\033[0;0;0m" // default
-	   }
-	   , _this = this;
+    var _this = this;
   
     
     var query = {};
@@ -166,23 +215,17 @@ List Tasks
       }, jsonResp(function(body){
       
         var limind = _this.opts['--limit']?(body.rows.length - parseInt(_this.opts['--limit'])):0;        
-        for (var i = limind; i< body.rows.length; i++){
-          var item = body.rows[body.rows.length - i -1] //Reverse
-            , fmtd = "";
-            
-          if (item.value.completed)
-            fmtd += "X "
-          else
-            fmtd += "  "   
-            
-            
-          fmtd += item.value._id.slice(-4) + ": " + item.value.title; // TODO - smarter slugify           
-          
-          if (item.value.tags && item.value.tags.length){
-            fmtd += " #" + item.value.tags.join(", #");
-          }
-          console.log(colors[item.key[1]], fmtd,  colors[4]);
-        }          
+        
+        var iter = function(i){
+          if (i < body.rows.length){
+            formatTask(_this, body.rows[body.rows.length - i -1], function(out){
+              if(out)
+                console.log(out);
+              iter(i+1);
+            });
+          }  
+        }  
+        iter(limind);  
     }));
   },
   
@@ -249,8 +292,36 @@ List Tasks
  **********/
   curr : function(){
     this.opts['--limit'] = 1;
+    this.opts['--sub'] = true;
     commands.ls.apply(this, arguments)
+  },
+
+/***********
+ Prerequisite
+ 
+ $> pre x y 
+ means y is a prerequisite of x
+ **********/  
+  pre : function(){
+    var item_idx = arguments[1]
+      , item_idy = arguments[2]
+      , conf = this;
+    getItem(conf, item_idx, function(itemx){
+      getItem(conf, item_idy, function(itemy){
+        itemx.prerequisites = itemx.prerequisites || [];
+        itemx.prerequisites.push("*" + itemy._id);
+        postTask(conf, itemx, function(){});
+        
+        itemy.class.push('sub');
+        postTask(conf, itemy, function(){});
+        
+      });
+    });  
+      
+  
   }
+  
+  
 };
 
 
