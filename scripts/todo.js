@@ -71,12 +71,17 @@ var post = function(conf, url, data, cb){
 
 
 
-var getItem = function(conf, id, cb){
+var getItem = function(conf, id, cb, all){
   // ==Fuzzy match:
   // 1. Look for id sub in uncomplete tasks
   // 2. Look for segment of task title
+  if (all)
+    var uri = conf.db_uri + "/_design/database/_view/list-todo"
+  else
+    var uri = conf.db_uri + "/_design/database/_view/list-todo?endkey=[true]"
+  
   request({
-      uri : conf.db_uri + "/_design/database/_view/list-todo?endkey=[true]",
+      uri : uri,
       headers : conf.headers,
       }, jsonResp(function(body){
         var out = [];
@@ -137,9 +142,12 @@ var formatTask = function(conf, item, cb, prefix, sub){
             
   if (val.completed)
     fmtd += "X "
-  else
-    fmtd += "  "   
-      
+  else{
+    if (val.deleted)
+      fmtd += "D "
+    else   
+      fmtd += "  "   
+  }    
       
   fmtd += val._id.slice(-4) + ": " + val.title; // TODO - smarter slugify           
   
@@ -158,8 +166,8 @@ var formatTask = function(conf, item, cb, prefix, sub){
             } else {
               cb(out + '\n' + tsk);
             }
-          }, '  ', true);
-        });
+          }, '    ', true);
+        }, true);
       }
       iter(0, fmtd);
       return;
