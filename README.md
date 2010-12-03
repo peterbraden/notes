@@ -11,16 +11,32 @@ Notes is a bunch of tools to organise life.
 	Added: e53c0e66d62b946d2899a45a2c002fa4
 
 	$> todo importance bacon 0
-	Added: e53c0e66d62b946d2899a45a2c002fa4
 
 	$> todo ls 
  	  2fa4 - Take over world
  	  183f - Buy bacon
  
+ 	$> todo add Conquer panama
+ 	Added : e53c0e66d62b946d2899a45a2c004gd3
+ 
+ 	$> todo pre world panama
+ 	
+ 	$> todo ls 
+ 	  2fa4 - Take over world (1 sub)
+ 	  183f - Buy bacon
+
+	$> todo open world
+	$> todo ls 
+ 	  2fa4 - Take over world
+ 	      4gd3 - Conquer Panama
+ 	  183f - Buy bacon
+	
+	$> todo close world
+ 
 	$> todo do 183f
 	
 	$> todo ls
-	  2fa4 - Take over world
+	  2fa4 - Take over world (1 sub)
 
 	$> todo rm world
 	
