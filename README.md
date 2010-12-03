@@ -87,8 +87,10 @@ Sync Kindle
 	X fuzzy id matching
     X tag
     X curr
-    - pre
-
+    X pre
+	X open
+	X close
+	
  - Delicious syncing 
  - html editor page
 
