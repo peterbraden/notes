@@ -327,7 +327,33 @@ List Tasks
     });  
       
   
-  }
+  },
+/**************
+  Open subtasks
+***************/
+  open : function(){
+    var item_id = arguments[1]
+      , conf = this;
+    
+    getItem(conf, item_id, function(item){
+      item['open'] = new Date().toISOString();
+      postTask(conf, item, function(){});
+    }, true);  
+  },
+  
+/**************
+  Close subtasks
+***************/
+  close : function(){
+    var item_id = arguments[1]
+      , conf = this;
+    
+    getItem(conf, item_id, function(item){
+      item['open'] = false;
+      postTask(conf, item, function(){});
+    }, true);  
+  },    
+  
   
   
 };
