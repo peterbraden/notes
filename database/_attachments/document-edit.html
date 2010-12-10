@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Edit : ?</title>
+    <link rel="stylesheet" href="style/main.css" type="text/css">
+    <style>
+li	{padding:5px;}
+.val	{min-width:200px;}
+input {min-width:200px; border:1px solid #eee; font-family:monospace;}
+
+    
+    </style>
+  </head>
+  <body>
+    <div id="account"></div>
+    <h1>Edit : ?</h1>
+    
+    <div class='editor' style = 'display:none;'></div>
+    
+    
+
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.js"></script>
+  <script type='text/javascript'>
+  
+$(function(){
+
+
+var createItem = function(){
+	return $("<li />")
+						.append("<span class='val hidden' />")
+						.append("<input class='editItem' type='text'>")
+						.append("<a href = '#' class='addSub'>+</a>")
+
+}
+
+
+var editItem = function(){
+	var _t = $(this)
+		, val = _t.find('.val').first()
+		, input = _t.find('input').first()
+
+	val.hide()
+	input.val(val.text())
+	input.show()
+	input.focus()
+}
+
+var showItem = function(){
+	var _t = $(this)
+		, val = _t.find('.val').first()
+		, input = _t.find('input').first()
+
+	input.hide()
+	val.text(input.val())
+	if (!input.val())
+		_t.find('.addSub').first().hide();
+	else
+		_t.find('.addSub').first().show();	
+	val.show()
+}
+
+var createSub = function(){
+	var currList = $(this)
+		,	newList = $("<ul />")
+		, newItem = $("<li><a class='add' href = '#'>+</a></li>");
+	
+	newList.append(newItem);
+	currList.append(newList);
+	newItem.find('a').trigger('click');
+	
+}
+
+
+
+$('.editor .editItem').live('blur', function(){
+	showItem.apply($(this).parent());
+});
+
+$('.editor .editItem').live('keydown', function(e){
+	var kc = e.keyCode || e.which; 
+	if (kc == 9 ){ //TAB
+		e.preventDefault()
+		$(this).blur().parent().find('.addSub').first().click();
+		return false;	
+	}	
+	
+	if (kc == 13){ //ENTER
+		$(this).blur().parent().parent().find('.add').first().click();
+		return false;
+	}
+});
+
+$('.editor li').live('edit', function(e){
+	editItem.apply(this);
+});
+
+$('.editor li').live('click', function(){
+	if($(this).find('.val').first().is(':visible')){
+		$(this).trigger('edit');
+	}
+})
+
+
+
+$('.editor .val').live('click', function(){
+	$(this).parent().trigger('edit');
+})
+
+
+$('.add').live('click', function(){
+	var newItem = createItem();
+	$(this).parent().before(newItem)
+	newItem.find('input').trigger('focus');
+	
+	return false;
+});
+
+
+$('.addSub').live('click', function(e){
+	createSub.apply($(this).parent())
+	//Remove link
+	$(this).remove();
+
+	return false;
+});
+
+
+//Init
+
+createSub.apply($('.editor').show());
+
+});  
+  
+  
+	</script>
+	</body>
+</html>    
