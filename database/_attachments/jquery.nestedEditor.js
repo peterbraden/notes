@@ -1,28 +1,3 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Edit : ?</title>
-    <link rel="stylesheet" href="style/main.css" type="text/css">
-    <style>
-li	{padding:5px;}
-.val	{min-width:200px;}
-input {min-width:200px; border:1px solid #eee; font-family:monospace;}
-.al   {list-style:none;}
-
-    
-    </style>
-  </head>
-  <body>
-    <div id="account"></div>
-    <div class='editor' style = 'display:none;'></div>
-    
-    
-
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.js"></script>
-  <script type='text/javascript'>
-  
-$(function(){
-
 
 /***************************
 === JQuery Nested Editor ===
@@ -195,22 +170,3 @@ A widget for the editing of hierarchical information in the form of nested lists
 	};
 	
 })(jQuery);
-
-
-
-
-
-
-
-
-
-//Init
-
-$('.editor').nestedEditor().show();
-
-});  
-  
-  
-	</script>
-	</body>
-</html>    
