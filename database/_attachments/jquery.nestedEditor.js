@@ -1,20 +1,31 @@
-
 /***************************
 === JQuery Nested Editor ===
 Author: Peter Braden <peterbraden@peterbraden.co.uk>
 
 A widget for the editing of hierarchical information in the form of nested lists
 
+$('#myId').nestedEditor()
+
+...
+
+$('#myId').nestedEditor('getJSON')
+
 ****************************/
 
 (function($){
 	var nestedEditor = {
 		
-		createItem : function(){
+		createItem : function(text){
+			var text = text || ""
+				, add = $("<a href = '#' class='addSub'>&rarr;</a>");
+				
+			if (!text)
+				add.hide();
+			
 			return $("<li />")
-				.append("<span class='val hidden' />")
-				.append("<input class='editItem' type='text'>&nbsp;")
-				.append($("<a href = '#' class='addSub'>&rarr;</a>").hide())
+				.append("<span class='val hidden' >" + text + "</span>")
+				.append($("<input class='editItem' value='" + text + "'type='text'>&nbsp;"))
+				.append(add)
 
 			},
 			
@@ -43,15 +54,17 @@ A widget for the editing of hierarchical information in the form of nested lists
 			val.show()
 		},
 
-		createSub : function(){
+		createSub : function(noclick){
 			var currList = $(this)
 				,	newList = $("<ul />")
 				, newItem = $("<li class='al'><a class='add' href = '#'>+</a></li>");
 			
 			newList.append(newItem);
 			currList.append(newList);
-			newItem.children('a').trigger('click');
-			
+			if(!noclick){
+				newItem.children('a').trigger('click');
+			}	
+			return newList;
 		},
 	
 		getObj : function(parent){
@@ -78,6 +91,35 @@ A widget for the editing of hierarchical information in the form of nested lists
 
 		getJSON : function(parent){
 			return JSON.stringify(nestedEditor.getObj(parent));
+		},
+		
+		putJSON : function(json, parent){
+			var lis = nestedEditor.createSub.apply(parent, [true]);
+			nestedEditor.putObj(JSON.parse(json), lis);
+		},
+		
+		isArray : function(value) {
+   			return Object.prototype.toString.call(value) === "[object Array]";
+  		},
+  		
+		putObj : function(obj, parent){
+			if (typeof(obj) == 'string'){
+				var x = nestedEditor.createItem(obj);
+				parent.prepend(x);
+				nestedEditor.showItem.apply(x);
+				return x
+			} else if (nestedEditor.isArray(obj)){
+				for (var x = obj.length-1; x >=0; x--){
+					nestedEditor.putObj(obj[x], parent)						
+				}
+			} else {
+				for (var k in obj){
+					var sub = nestedEditor.putObj(k, parent)
+					sub.children('a.addSub').remove();
+					var lis = nestedEditor.createSub.apply(sub, [true]);
+					nestedEditor.putObj(obj[k], lis)
+				}
+			}	
 		}
 	
 	};
@@ -136,6 +178,7 @@ A widget for the editing of hierarchical information in the form of nested lists
 	
 	
 	$('.nestedEditor .add').live('click.nestedEditor', function(){
+		
 		var newItem = nestedEditor.createItem();
 		$(this).parent().before(newItem)
 		newItem.children('input').trigger('focus');
@@ -155,10 +198,21 @@ A widget for the editing of hierarchical information in the form of nested lists
 
 
 	$.fn.nestedEditor = function(method) {
+		var args = arguments
+		
 		if (method){
 			if (method === 'getJSON'){
 				return nestedEditor.getJSON(this.children('ul'));
 			}
+			
+			if (method === 'putJSON'){
+				$(this).each(function(){
+					$(this).addClass('nestedEditor');
+					nestedEditor.putJSON(args[1] || '[]', $(this))
+				});
+				return this;
+			}
+				
 		}
 		
 		this.each(function(){
