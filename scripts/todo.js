@@ -207,41 +207,50 @@ Add a task
 List Tasks
 ************/  
   ls : function(){
-	var _this = this;
+		var _this = this;
   
 	
-	var query = {};
+		var query = {};
 	
-	if (!this.opts['-a']){
-	  // Finish before completed items (first key seg is complete)
-	  query['endkey'] = "[true]"
-	}
+		if (!this.opts['-a']){
+		  // Finish before completed items (first key seg is complete)
+		  query['endkey'] = "[true]"
+		}
 	  
-	request({
-	  uri : this.db_uri + "/_design/database/_view/list-todo?" + querystring.stringify(query),
-	  headers : this.headers,
-	  }, jsonResp(function(body){
+		request({
+		  uri : this.db_uri + "/_design/database/_view/list-todo?" + querystring.stringify(query),
+		  headers : this.headers,
+		  }, jsonResp(function(body){
 	  
-		var limind = _this.opts['--limit']?(body.rows.length - parseInt(_this.opts['--limit'])):0;		
+				var limind = _this.opts['--limit']?(body.rows.length - parseInt(_this.opts['--limit'])):0;		
 		
-		var iter = function(i){
-		  if (i < body.rows.length){
-			formatTask(_this, body.rows[body.rows.length - i -1], function(out){
-			  if(out)
-				console.log(out);
-			  iter(i+1);
-			});
-		  }  
-		}  
-		iter(limind);  
-	}));
-  },
+				var iter = function(i){
+				  if (i < body.rows.length){
+					formatTask(_this, body.rows[body.rows.length - i -1], function(out){
+					  if(out)
+						console.log(out);
+					  iter(i+1);
+					});
+				  }  
+				}  
+				iter(limind);  
+		}));
+	  },
 
 /*******
 * TODAY
 * Bring up an agenda, also tasks done today
 ********/
 	today: function(){
+		var now = new Date()
+		
+		request({
+			uri : this.db_uri + "/_design/database/_view/list-todo",
+			headers : this.headers
+			}, jsonResp(function(body){
+				console.log(body)
+			})
+		)
 		
 		
 		
