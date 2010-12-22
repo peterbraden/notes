@@ -109,5 +109,9 @@ Sync Kindle
 	
  - Delicious syncing 
  - html editor page
+ 	X Nested list to json
+	o Json to nested list
 
+ D Evernote syncing
+ 	: The evernote api is a piece of crap. Thrift, and xml.
 
