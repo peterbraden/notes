@@ -22,6 +22,30 @@ var request = require('request')
   , scriptTools = require('scriptTools')
   , querystring = require('querystring');
 
+
+Date.prototype.toLocalISOString = function(){
+	// ISO 8601
+	var d = this
+		, pad = function (n){return n<10 ? '0'+n : n}
+		, tz = d.getTimezoneOffset() //mins
+		, tzs = (tz>0?"-":"+") + pad(parseInt(tz/60))
+	
+	if (tz%60 != 0)
+		tzs += pad(tz%60)
+	
+	if (tz === 0) // Zulu time == UTC
+		tzs = 'Z'
+		
+	 return d.getFullYear()+'-'
+	      + pad(d.getMonth()+1)+'-'
+	      + pad(d.getDate())+'T'
+	      + pad(d.getHours())+':'
+	      + pad(d.getMinutes())+':'
+	      + pad(d.getSeconds()) + tzs
+}
+
+
+
 var loadDB = function(opts, cb){
   var h = {accept:'application/json', 'content-type':'application/json'}
 	, uri = "http://" + opts.user + ":" + opts.pwd + "@" + opts.host + "/" + opts.database;
@@ -35,6 +59,7 @@ var colors = {
 			1 : "\033[1;33;40m",
 			2 : "\033[1;36;40m",
 			3 : '\033[1;34;40m',
+			bold : "\033[1;32;7m",
 			4 : "\033[0;0;0m" // default
 	   };
 
@@ -136,8 +161,8 @@ var formatTask = function(conf, item, cb, prefix, sub){
 	, prefix = prefix || '';
 	  
   if (!sub && (val.class.indexOf('sub') >-1 && !(conf.opts['--sub'] || conf.opts['-a']))){
-	cb();
-	return;
+		cb();
+		return;
   }		
 			
   if (val.completed)
@@ -157,23 +182,23 @@ var formatTask = function(conf, item, cb, prefix, sub){
   
   // V Densely nested :)
   if (val.prerequisites && val.prerequisites.length){
-	if (val.open){
-	  var iter = function(j, out){
-		getItem(conf, val.prerequisites[j].slice(1), function(task){
-		  formatTask(conf, {value:task}, function(tsk){
-			if(j<val.prerequisites.length-1){
-			  iter(j+1, out + '\n' + tsk)
-			} else {
-			  cb(out + '\n' + tsk);
-			}
-		  }, '	', true);
-		}, true);
-	  }
-	  iter(0, fmtd);
-	  return;
-	} else {
-	  fmtd += " (" + val.prerequisites.length + " sub)";
-	}  
+		if (val.open){
+		  var iter = function(j, out){
+				getItem(conf, val.prerequisites[j].slice(1), function(task){
+				  formatTask(conf, {value:task}, function(tsk){
+						if(j<val.prerequisites.length-1){
+						  iter(j+1, out + '\n' + tsk)
+						} else {
+						  cb(out + '\n' + tsk);
+						}
+				  }, '	', true);
+				}, true);
+		  }
+		  iter(0, fmtd);
+		  return;
+		} else {
+		  fmtd += " (" + val.prerequisites.length + " sub)";
+		}  
   }
   cb(prefix + colors[val.importance==undefined?4:val.importance] + fmtd + colors[4]);
 }
@@ -243,12 +268,39 @@ List Tasks
 ********/
 	today: function(){
 		var now = new Date()
-		
+			, nows = now.toLocalISOString().slice(0,10)
+			, out = []
+			, _this = this
+			
 		request({
 			uri : this.db_uri + "/_design/database/_view/list-todo",
 			headers : this.headers
 			}, jsonResp(function(body){
-				console.log(body)
+				for (var i in body.rows){
+					var cd = body.rows[i].value.completed
+					
+					//Fix data bug where completed = true
+					if (cd === true) cd = false;
+					if(cd && cd.slice(0,10) === nows){ // DONE TODAY
+						out.push(body.rows[i].value)		
+					}
+				}
+				
+				while(out.length < 5 && body.rows.length){
+					var item = body.rows.shift()
+					if(!item.key[0] && ! item.value.completed && ! item.value.deleted){
+						out.push(item.value)
+					}	
+				}
+				
+				console.log(colors['bold'] + "\n===== AGENDA FOR " + nows + " =====" + colors[4])
+				for (var i in out){
+					formatTask(_this, {value:out[i]}, function(out){
+						if(out) console.log(out)	
+					}, '')
+				}
+				console.log("")
+			
 			})
 		)
 		
