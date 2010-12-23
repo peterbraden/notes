@@ -277,7 +277,7 @@ List Tasks
 			headers : this.headers
 			}, jsonResp(function(body){
 				for (var i in body.rows){
-					var cd = body.rows[i].value.completed
+					var cd = new Date(body.rows[i].value.completed).toLocalISOString()
 					
 					//Fix data bug where completed = true
 					if (cd === true) cd = false;
@@ -297,10 +297,8 @@ List Tasks
 				for (var i in out){
 					formatTask(_this, {value:out[i]}, function(out){
 						if(out) console.log(out)	
-					}, '')
+					}, '', true)
 				}
-				console.log("")
-			
 			})
 		)
 		
